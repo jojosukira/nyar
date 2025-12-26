@@ -1,0 +1,34 @@
+name: Run Google Search Console Verification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        pip install google-api-python-client google-auth google-auth-oauthlib requests
+
+    - name: Restore client_secret.json
+      run: echo "${{ secrets.CLIENT_SECRET_JSON }}" > client_secret.json
+
+    - name: Restore token.json
+      run: echo "${{ secrets.TOKEN_JSON }}" > token.json
+
+    - name: Run bulk.py
+      run: python bulk.py
+
+    - name: Upload report
+      uses: actions/upload-artifact@v3
+      with:
+        name: tokens-report
+        path: tokens_report.csv
